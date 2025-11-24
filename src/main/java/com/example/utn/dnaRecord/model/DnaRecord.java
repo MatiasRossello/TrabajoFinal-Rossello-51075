@@ -18,6 +18,7 @@ public class DnaRecord {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    String nombre;
+    private String nombre;
+    private Boolean isMutant;
 
 }

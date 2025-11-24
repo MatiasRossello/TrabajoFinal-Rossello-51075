@@ -13,24 +13,27 @@ import java.util.Optional;
 public class MutantService {
 
     private final DnaRecordRepository dnaRecordRepository;
+    private final MutantDetector mutantDetector; // ← NUEVO: Inyectar MutantDetector
 
     @Autowired
-    public MutantService(DnaRecordRepository dnaRecordRepository) {
+    public MutantService(DnaRecordRepository dnaRecordRepository,
+                         MutantDetector mutantDetector) { // ← NUEVO: Constructor actualizado
         this.dnaRecordRepository = dnaRecordRepository;
+        this.mutantDetector = mutantDetector; // ← NUEVO
     }
 
     public boolean analyzeDna(String[] dna) {
-        // 1. Calcular Hash para búsqueda eficiente
+        // 1. Calcular Hash
         String dnaHash = calculateDnaHash(dna);
 
-        // 2. Verificar Cache (Base de Datos)
+        // 2. Verificar Cache
         Optional<DnaRecord> existingRecord = dnaRecordRepository.findByDnaHash(dnaHash);
         if (existingRecord.isPresent()) {
             return existingRecord.get().getIsMutant();
         }
 
-        // 3. Calcular si es mutante (Lógica principal)
-        boolean isMutant = isMutant(dna);
+        // 3. CAMBIO: Delegar al MutantDetector
+        boolean isMutant = mutantDetector.isMutant(dna); // ← CAMBIO: antes era this.isMutant(dna)
 
         // 4. Guardar resultado
         DnaRecord newRecord = new DnaRecord();
@@ -41,65 +44,8 @@ public class MutantService {
         return isMutant;
     }
 
-    private boolean isMutant(String[] dna) {
-        int n = dna.length;
-        int sequenceCount = 0;
-
-        // Optimización: char[][] para acceso rápido
-        char[][] matrix = new char[n][n];
-        for (int i = 0; i < n; i++) {
-            matrix[i] = dna[i].toCharArray();
-        }
-
-        // Recorrido de la matriz
-        for (int i = 0; i < n; i++) {
-            for (int j = 0; j < n; j++) {
-                // Early Termination: Si ya encontramos más de 1, cortamos.
-                if (sequenceCount > 1) return true;
-
-                char currentChar = matrix[i][j];
-
-                // 1. Horizontal
-                if (j <= n - 4) {
-                    if (currentChar == matrix[i][j+1] &&
-                            currentChar == matrix[i][j+2] &&
-                            currentChar == matrix[i][j+3]) {
-                        sequenceCount++;
-                    }
-                }
-
-                // 2. Vertical
-                if (i <= n - 4) {
-                    if (currentChar == matrix[i+1][j] &&
-                            currentChar == matrix[i+2][j] &&
-                            currentChar == matrix[i+3][j]) {
-                        sequenceCount++;
-                    }
-                }
-
-                // 3. Diagonales
-                if (i <= n - 4) {
-                    // Diagonal Principal (\)
-                    if (j <= n - 4) {
-                        if (currentChar == matrix[i+1][j+1] &&
-                                currentChar == matrix[i+2][j+2] &&
-                                currentChar == matrix[i+3][j+3]) {
-                            sequenceCount++;
-                        }
-                    }
-                    // Diagonal Inversa (/)
-                    if (j >= 3) {
-                        if (currentChar == matrix[i+1][j-1] &&
-                                currentChar == matrix[i+2][j-2] &&
-                                currentChar == matrix[i+3][j-3]) {
-                            sequenceCount++;
-                        }
-                    }
-                }
-            }
-        }
-        return sequenceCount > 1;
-    }
+    // ELIMINAR: el método isMutant() que tenías aquí
+    // Ya no es necesario, está en MutantDetector
 
     private String calculateDnaHash(String[] dna) {
         try {

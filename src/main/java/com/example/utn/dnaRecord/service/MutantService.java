@@ -1,18 +1,52 @@
 package com.example.utn.dnaRecord.service;
 
+import com.example.utn.dnaRecord.model.DnaRecord;
 import com.example.utn.dnaRecord.repository.DnaRecordRepository;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
 import java.util.regex.Pattern;
 
 @Service
 public class MutantService {
 
     private DnaRecordRepository dnaRecordRepository;
-
-    // Regex para validar que solo tenga A, T, C, G
     private static final Pattern DNA_VALIDO = Pattern.compile("^[ATCG]+$");
 
-    public boolean isMutant(String[] dna) {
+    public MutantService(DnaRecordRepository dnaRecordRepository) {
+        this.dnaRecordRepository = dnaRecordRepository;
+    }
+
+
+
+    public boolean analyzeDna(String[] dna) {
+
+        // A. Convertimos el array a un solo String para guardarlo (ej: "ATGCGA...")
+        String dnaSequence = String.join("", dna);
+
+        // B. Verificamos si ya existe en la Base de Datos
+        Optional<DnaRecord> existingRecord = dnaRecordRepository.findByDna(dnaSequence);
+
+        if (existingRecord.isPresent()) {
+            // Si ya existe, devolvemos el resultado guardado y NO calculamos de nuevo
+            return existingRecord.get().getIsMutant();
+        }
+
+        // C. Si es nuevo, calculamos con tu lógica
+        boolean isMutant = isMutant(dna);
+
+        // D. Guardamos el resultado en la Base de Datos
+        DnaRecord newRecord = new DnaRecord();
+        newRecord.setDna(dnaSequence);
+        newRecord.setIsMutant(isMutant);
+        dnaRecordRepository.save(newRecord);
+
+        return isMutant;
+    }
+
+
+
+    private boolean isMutant(String[] dna) {
         // 1. Validaciones previas
         validateDna(dna);
 

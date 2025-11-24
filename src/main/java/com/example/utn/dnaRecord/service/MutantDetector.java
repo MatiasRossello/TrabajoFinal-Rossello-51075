@@ -1,37 +1,48 @@
 package com.example.utn.dnaRecord.service;
 
 import org.springframework.stereotype.Service;
+import java.util.regex.Pattern;
 
 @Service
 public class MutantDetector {
 
-    /**
-     * Determina si una secuencia de ADN pertenece a un mutante.
-     * Un humano es mutante si tiene MÁS DE UNA secuencia de 4 letras iguales.
-     */
+    // Patrón para validar caracteres válidos (solo A, T, C, G)
+    private static final Pattern VALID_DNA_PATTERN = Pattern.compile("^[ATCG]+$");
+
     public boolean isMutant(String[] dna) {
+        // 1. Validación básica de entrada
         if (dna == null || dna.length == 0) {
             return false;
         }
 
         int n = dna.length;
         int sequenceCount = 0;
-
-        // Conversión a char[][] para acceso rápido
         char[][] matrix = new char[n][n];
+
+        // 2. Conversión y Validación Fila por Fila
         for (int i = 0; i < n; i++) {
+            // Corrección Error 2 (NullRow): Si una fila es null, no es válido
+            if (dna[i] == null) {
+                return false;
+            }
+
+            // Corrección Error 1 (InvalidCharacters): Si tiene letras raras, no es válido
+            // Verifica también que la matriz sea cuadrada (longitud de fila == n)
+            if (dna[i].length() != n || !VALID_DNA_PATTERN.matcher(dna[i]).matches()) {
+                return false;
+            }
+
             matrix[i] = dna[i].toCharArray();
         }
 
-        // Búsqueda de secuencias
+        // 3. Lógica de Búsqueda (Tu algoritmo original)
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < n; j++) {
-                // Early Termination: Si ya encontramos >1, cortamos
                 if (sequenceCount > 1) return true;
 
                 char currentChar = matrix[i][j];
 
-                // 1. Horizontal
+                // Horizontal
                 if (j <= n - 4) {
                     if (currentChar == matrix[i][j+1] &&
                             currentChar == matrix[i][j+2] &&
@@ -39,8 +50,7 @@ public class MutantDetector {
                         sequenceCount++;
                     }
                 }
-
-                // 2. Vertical
+                // Vertical
                 if (i <= n - 4) {
                     if (currentChar == matrix[i+1][j] &&
                             currentChar == matrix[i+2][j] &&
@@ -48,8 +58,7 @@ public class MutantDetector {
                         sequenceCount++;
                     }
                 }
-
-                // 3. Diagonal Principal (\)
+                // Diagonal Principal
                 if (i <= n - 4 && j <= n - 4) {
                     if (currentChar == matrix[i+1][j+1] &&
                             currentChar == matrix[i+2][j+2] &&
@@ -57,8 +66,7 @@ public class MutantDetector {
                         sequenceCount++;
                     }
                 }
-
-                // 4. Diagonal Inversa (/)
+                // Diagonal Inversa
                 if (i <= n - 4 && j >= 3) {
                     if (currentChar == matrix[i+1][j-1] &&
                             currentChar == matrix[i+2][j-2] &&

@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 
 @Entity
 @Data
@@ -19,4 +20,11 @@ public class DnaRecord implements Serializable {
     private String dnaHash; // CAMBIO: Guardamos el Hash único
 
     private Boolean isMutant;
+
+    private LocalDateTime createdAt;
+
+    @PrePersist
+    protected void onCreate() {
+        createdAt = LocalDateTime.now();
+    }
 }

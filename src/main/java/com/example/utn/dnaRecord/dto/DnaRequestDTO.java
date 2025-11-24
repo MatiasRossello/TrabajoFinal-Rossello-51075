@@ -5,10 +5,9 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 @Data
-public class DnaRequest {
+public class DnaRequestDTO{
 
     @NotNull
     @NotEmpty
-    private String dna;
-
+    private String[] dna; // CORREGIDO: Ahora es un Array de Strings, no un String simple.
 }

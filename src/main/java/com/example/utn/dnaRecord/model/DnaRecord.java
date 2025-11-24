@@ -3,20 +3,20 @@ package com.example.utn.dnaRecord.model;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.io.Serializable;
+
 @Entity
 @Data
-@Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class DnaRecord {
+public class DnaRecord implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(unique = true)
-    private String dna;
-    private Boolean isMutant;
+    private String dnaHash; // CAMBIO: Guardamos el Hash único
 
+    private Boolean isMutant;
 }

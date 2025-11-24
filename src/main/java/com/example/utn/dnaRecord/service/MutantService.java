@@ -2,6 +2,8 @@ package com.example.utn.dnaRecord.service;
 
 import com.example.utn.dnaRecord.model.DnaRecord;
 import com.example.utn.dnaRecord.repository.DnaRecordRepository;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -22,21 +24,25 @@ public class MutantService {
     }
 
     public boolean analyzeDna(String[] dna) {
-        // 1. Calcular el Hash SHA-256 del ADN
+        // 1. ¡VALIDAR PRIMERO!
+        // Esto lanzará IllegalArgumentException si es null, ANTES de intentar calcular el hash.
+        validateDna(dna);
+
+        // 2. Calcular el Hash SHA-256 del ADN (Ahora es seguro porque ya sabemos que no es null)
         String dnaHash = calculateDnaHash(dna);
 
-        // 2. Verificar si ya existe en la Base de Datos usando el Hash
+        // 3. Verificar si ya existe en la Base de Datos usando el Hash
         Optional<DnaRecord> existingRecord = dnaRecordRepository.findByDnaHash(dnaHash);
 
         if (existingRecord.isPresent()) {
-            // Si existe, devolvemos el resultado guardado
             return existingRecord.get().getIsMutant();
         }
 
-        // 3. Si no existe, calculamos si es mutante
+        // 4. Si no existe, calculamos si es mutante
+        // (validateDna se ejecutará de nuevo dentro de isMutant, pero no hace daño)
         boolean isMutant = isMutant(dna);
 
-        // 4. Guardamos el nuevo registro con su Hash
+        // 5. Guardamos el nuevo registro con su Hash
         DnaRecord newRecord = new DnaRecord();
         newRecord.setDnaHash(dnaHash);
         newRecord.setIsMutant(isMutant);

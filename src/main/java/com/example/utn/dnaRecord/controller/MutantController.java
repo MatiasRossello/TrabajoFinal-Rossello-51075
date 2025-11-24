@@ -15,7 +15,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/mutant") // Buena práctica: definir la ruta base aquí
 @Tag(name = "Mutant Detector", description = "API para la detección de mutantes basada en ADN")
 public class MutantController {
 
@@ -34,9 +33,7 @@ public class MutantController {
             @ApiResponse(responseCode = "400", description = "ADN inválido (formato incorrecto)", content = @Content)
     })
 
-
-
-    @PostMapping
+    @PostMapping("/mutant")
     public ResponseEntity<Void> checkMutant(@Valid @RequestBody DnaRequestDTO dnaRequest) {
         boolean isMutant = mutantService.analyzeDna(dnaRequest.getDna());
         if (isMutant) {
@@ -46,8 +43,7 @@ public class MutantController {
         }
     }
 
-    // Ya que estamos, documentemos también el GET /stats (que deberíamos mover aquí o en un StatsController)
-    // Como tu requerimiento dice "/stats" (fuera de /mutant), lo mapeamos absoluto:
+
     @Operation(summary = "Obtener estadísticas de verificaciones")
     @GetMapping("/stats") // Esto mapea a /mutant/stats si dejamos el RequestMapping arriba, cuidado.
     // Corrección: Para cumplir con "/stats" literal, lo mejor es sacar el @RequestMapping de la clase o usar "/"

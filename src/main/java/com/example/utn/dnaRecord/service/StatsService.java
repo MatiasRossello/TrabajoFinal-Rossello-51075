@@ -2,17 +2,15 @@ package com.example.utn.dnaRecord.service;
 
 import com.example.utn.dnaRecord.dto.StatsResponseDTO;
 import com.example.utn.dnaRecord.repository.DnaRecordRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+@RequiredArgsConstructor
 
 @Service
 public class StatsService {
 
     private final DnaRecordRepository dnaRecordRepository;
-
-    // Inyección de dependencias por constructor
-    public StatsService(DnaRecordRepository dnaRecordRepository) {
-        this.dnaRecordRepository = dnaRecordRepository;
-    }
 
     public StatsResponseDTO getStats() {
         // 1. Consultar a la base de datos los totales

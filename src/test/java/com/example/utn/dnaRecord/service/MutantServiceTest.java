@@ -1,6 +1,6 @@
 package com.example.utn.dnaRecord.service;
 
-import com.example.utn.dnaRecord.model.DnaRecord;
+import com.example.utn.dnaRecord.entity.DnaRecord;
 import com.example.utn.dnaRecord.repository.DnaRecordRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

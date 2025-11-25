@@ -1,6 +1,6 @@
 package com.example.utn.dnaRecord.repository;
 
-import com.example.utn.dnaRecord.model.DnaRecord;
+import com.example.utn.dnaRecord.entity.DnaRecord;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

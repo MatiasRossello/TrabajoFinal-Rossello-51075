@@ -1,7 +1,8 @@
 package com.example.utn.dnaRecord.service;
 
-import com.example.utn.dnaRecord.model.DnaRecord;
+import com.example.utn.dnaRecord.entity.DnaRecord;
 import com.example.utn.dnaRecord.repository.DnaRecordRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -9,18 +10,14 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Optional;
 
+@RequiredArgsConstructor
+
 @Service
 public class MutantService {
 
     private final DnaRecordRepository dnaRecordRepository;
-    private final MutantDetector mutantDetector; // ← NUEVO: Inyectar MutantDetector
+    private final MutantDetector mutantDetector;
 
-    @Autowired
-    public MutantService(DnaRecordRepository dnaRecordRepository,
-                         MutantDetector mutantDetector) { // ← NUEVO: Constructor actualizado
-        this.dnaRecordRepository = dnaRecordRepository;
-        this.mutantDetector = mutantDetector; // ← NUEVO
-    }
 
     public boolean analyzeDna(String[] dna) {
         // 1. Calcular Hash

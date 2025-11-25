@@ -1,4 +1,4 @@
-package com.example.utn.dnaRecord.model;
+package com.example.utn.dnaRecord.entity;
 
 import jakarta.persistence.*;
 import lombok.*;

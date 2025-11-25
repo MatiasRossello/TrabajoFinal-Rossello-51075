@@ -10,9 +10,12 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+@RequiredArgsConstructor
 
 @RestController
 @Tag(name = "Mutant Detector", description = "API para la detección de mutantes basada en ADN")
@@ -21,10 +24,6 @@ public class MutantController {
     private final MutantService mutantService;
     private final StatsService statsService;
 
-    public MutantController(MutantService mutantService, StatsService statsService) {
-        this.mutantService = mutantService;
-        this.statsService = statsService;
-    }
 
     @Operation(summary = "Detectar si un humano es mutante", description = "Analiza la secuencia de ADN enviada para determinar si cumple con los criterios de mutante.")
     @ApiResponses(value = {

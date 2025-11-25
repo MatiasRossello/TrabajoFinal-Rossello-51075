@@ -91,4 +91,21 @@ public class MutantControllerTest {
                 .andExpect(jsonPath("$.count_human_dna").value(100))
                 .andExpect(jsonPath("$.ratio").value(0.4));
     }
+
+    @Test
+    @DisplayName("POST /mutant - Maneja IllegalArgumentException con 400 Bad Request")
+    public void testCheckMutant_HandledException_Returns400() throws Exception {
+        // Simulamos que el servicio lanza una excepción de argumento ilegal (ej: error de lógica interna)
+        when(mutantService.analyzeDna(any())).thenThrow(new IllegalArgumentException("Error forzado de prueba"));
+
+        DnaRequestDTO request = new DnaRequestDTO();
+        request.setDna(new String[]{"ATGCGA","CAGTGC","TTATGT","AGAAGG","CCCCTA","TCACTG"});
+
+        // Verificamos que el GlobalExceptionHandler capture la excepción y devuelva 400
+        mockMvc.perform(post("/mutant")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isBadRequest()) // Esperamos 400
+                .andExpect(jsonPath("$").value("Error forzado de prueba")); // Verificamos el mensaje
+    }
 }

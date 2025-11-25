@@ -1,6 +1,7 @@
 package com.example.utn.dnaRecord.service;
 
 import com.example.utn.dnaRecord.entity.DnaRecord;
+import com.example.utn.dnaRecord.exception.DnaHashCalculationException;
 import com.example.utn.dnaRecord.repository.DnaRecordRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -56,7 +57,8 @@ public class MutantService {
             }
             return hexString.toString();
         } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException("Error al calcular el hash del ADN", e);
+            throw new DnaHashCalculationException(
+                    "Error al calcular el hash SHA-256 del ADN", e);
         }
     }
 }

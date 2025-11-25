@@ -80,4 +80,34 @@ class StatsServiceTest {
         // Ratio: 50 / 50 = 1.0
         assertEquals(1.0, response.getRatio());
     }
+
+    @Test
+    @DisplayName("Caso: Más humanos que mutantes (Ratio decimal <1)")
+    void testGetStats_MoreHumansThanMutants() {
+        // Simulamos: 30 mutantes, 70 humanos
+        when(dnaRecordRepository.countByIsMutant(true)).thenReturn(30L);
+        when(dnaRecordRepository.countByIsMutant(false)).thenReturn(70L);
+
+        StatsResponseDTO response = statsService.getStats();
+
+        assertEquals(30L, response.getCountMutantDna());
+        assertEquals(70L, response.getCountHumanDna());
+        // Ratio: 30 / 70 ≈ 0.42857
+        assertEquals(30.0 / 70.0, response.getRatio(), 0.0001);
+    }
+
+    @Test
+    @DisplayName("Caso: Más mutantes que humanos (Ratio >1)")
+    void testGetStats_MoreMutantsThanHumans() {
+        // Simulamos: 80 mutantes, 20 humanos
+        when(dnaRecordRepository.countByIsMutant(true)).thenReturn(80L);
+        when(dnaRecordRepository.countByIsMutant(false)).thenReturn(20L);
+
+        StatsResponseDTO response = statsService.getStats();
+
+        assertEquals(80L, response.getCountMutantDna());
+        assertEquals(20L, response.getCountHumanDna());
+        // Ratio: 80 / 20 = 4.0
+        assertEquals(4.0, response.getRatio(), 0.0001);
+    }
 }

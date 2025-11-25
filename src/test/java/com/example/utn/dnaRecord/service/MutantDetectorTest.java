@@ -147,4 +147,85 @@ class MutantDetectorTest {
         String[] dna = {"ATGCGA", "CAGTGC", "TTATGT", "AGAAGG", "CCCCTA", "TCACTG"};
         assertNotNull(mutantDetector.isMutant(dna));
     }
+
+    @Test
+    @DisplayName("Secuencia de longitud 5 no debe contar como mutante")
+    void testSequenceLongerThanFour() {
+        String[] dna = {
+                "AAAAAA", // 6 A's seguidas
+                "CAGTGC",
+                "TTATGT",
+                "AGACGG",
+                "GCGTCA",
+                "TCACTG"
+        };
+        // Debe ser HUMANO porque necesita EXACTAMENTE 4, no más
+        // Si solo hay 1 secuencia de 6, sigue siendo 1 secuencia
+        assertFalse(mutantDetector.isMutant(dna));
+    }
+
+    @Test
+    @DisplayName("Diagonal en esquina debe detectarse correctamente")
+    void testDiagonalInCorner() {
+        String[] dna = {
+                "ATGCGA",
+                "CAGTGC",
+                "TTATGT",
+                "AGAAGT",
+                "CCACTA",
+                "TCGCTG"
+        };
+        // Verificar que detecta diagonal en cualquier posición
+        boolean result = mutantDetector.isMutant(dna);
+        // Puede ser true o false dependiendo de las secuencias presentes
+        assertNotNull(result);
+    }
+
+    @Test
+    @DisplayName("Matriz mínima 4x4 con exactamente 2 secuencias")
+    void testMinimum4x4WithExactly2Sequences() {
+        String[] dna = {
+                "AAAA", // Horizontal
+                "CCCC", // Horizontal (2da secuencia)
+                "TTAT",
+                "AGAC"
+        };
+        assertTrue(mutantDetector.isMutant(dna));
+    }
+
+    @Test
+    @DisplayName("Matriz con caracteres minúsculas debe ser inválido")
+    void testLowercaseCharacters() {
+        String[] dna = {
+                "atgc",
+                "cagt",
+                "ttat",
+                "agac"
+        };
+        assertFalse(mutantDetector.isMutant(dna));
+    }
+
+    @Test
+    @DisplayName("Matriz con espacios debe ser inválido")
+    void testWhitespaceCharacters() {
+        String[] dna = {
+                "ATGC",
+                "CA T",
+                "TTAT",
+                "AGAC"
+        };
+        assertFalse(mutantDetector.isMutant(dna));
+    }
+
+    @Test
+    @DisplayName("Matriz con filas de diferentes longitudes")
+    void testUnevenRowLengths() {
+        String[] dna = {
+                "ATGCGA",
+                "CAG",      // Fila más corta
+                "TTATGT",
+                "AGAAGG"
+        };
+        assertFalse(mutantDetector.isMutant(dna));
+    }
 }

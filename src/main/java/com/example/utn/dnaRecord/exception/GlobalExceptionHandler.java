@@ -11,14 +11,19 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<String> handleIllegalArgument(IllegalArgumentException e) {
-        // Devuelve 400 Bad Request en lugar de 500
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<String> handleValidationExceptions(MethodArgumentNotValidException ex) {
-        // Esto devuelve el mensaje exacto de anotación @ValidDna
         String mensajeError = ex.getBindingResult().getAllErrors().get(0).getDefaultMessage();
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(mensajeError);
+    }
+
+    @ExceptionHandler(DnaHashCalculationException.class)
+    public ResponseEntity<String> handleDnaHashCalculationException(DnaHashCalculationException e) {
+        // Error interno del servidor (500) porque es un problema técnico, no del usuario
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body("Error interno al procesar el ADN: " + e.getMessage());
     }
 }

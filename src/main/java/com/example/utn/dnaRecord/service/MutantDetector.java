@@ -21,11 +21,11 @@ public class MutantDetector {
 
         // 2. Conversión y Validación Fila por Fila
         for (int i = 0; i < n; i++) {
-            // Corrección Error 2 (NullRow): Si una fila es null, no es válido
             if (dna[i] == null) {
                 return false;
             }
 
+            // Verifica formato NxN y caracteres válidos
             if (dna[i].length() != n || !VALID_DNA_PATTERN.matcher(dna[i]).matches()) {
                 return false;
             }
@@ -33,47 +33,68 @@ public class MutantDetector {
             matrix[i] = dna[i].toCharArray();
         }
 
-        // 3. Lógica de Búsqueda (Tu algoritmo original)
+        // 3. Lógica de Búsqueda
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < n; j++) {
+                // Early termination: si ya encontramos más de 1 secuencia, cortamos.
                 if (sequenceCount > 1) return true;
 
                 char currentChar = matrix[i][j];
 
-                // Horizontal
+                // --- HORIZONTAL (→) ---
                 if (j <= n - 4) {
                     if (currentChar == matrix[i][j+1] &&
                             currentChar == matrix[i][j+2] &&
                             currentChar == matrix[i][j+3]) {
-                        sequenceCount++;
+
+                        // CORRECCIÓN: Si la celda anterior (izquierda) era igual, ya contamos esta secuencia.
+                        if (!(j > 0 && matrix[i][j-1] == currentChar)) {
+                            sequenceCount++;
+                        }
                     }
                 }
-                // Vertical
+
+                // --- VERTICAL (↓) ---
                 if (i <= n - 4) {
                     if (currentChar == matrix[i+1][j] &&
                             currentChar == matrix[i+2][j] &&
                             currentChar == matrix[i+3][j]) {
-                        sequenceCount++;
+
+                        // CORRECCIÓN: Si la celda anterior (arriba) era igual, ya contamos esta secuencia.
+                        if (!(i > 0 && matrix[i-1][j] == currentChar)) {
+                            sequenceCount++;
+                        }
                     }
                 }
-                // Diagonal Principal
+
+                // --- DIAGONAL PRINCIPAL (↘) ---
                 if (i <= n - 4 && j <= n - 4) {
                     if (currentChar == matrix[i+1][j+1] &&
                             currentChar == matrix[i+2][j+2] &&
                             currentChar == matrix[i+3][j+3]) {
-                        sequenceCount++;
+
+                        // CORRECCIÓN: Si la celda anterior (arriba-izquierda) era igual, ya contamos esta secuencia.
+                        if (!(i > 0 && j > 0 && matrix[i-1][j-1] == currentChar)) {
+                            sequenceCount++;
+                        }
                     }
                 }
-                // Diagonal Inversa
+
+                // --- DIAGONAL INVERSA (↙) ---
                 if (i <= n - 4 && j >= 3) {
                     if (currentChar == matrix[i+1][j-1] &&
                             currentChar == matrix[i+2][j-2] &&
                             currentChar == matrix[i+3][j-3]) {
-                        sequenceCount++;
+
+                        // CORRECCIÓN: Si la celda anterior (arriba-derecha) era igual, ya contamos esta secuencia.
+                        if (!(i > 0 && j < n - 1 && matrix[i-1][j+1] == currentChar)) {
+                            sequenceCount++;
+                        }
                     }
                 }
             }
         }
+
         return sequenceCount > 1;
     }
 }

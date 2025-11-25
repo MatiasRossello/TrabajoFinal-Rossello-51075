@@ -22,8 +22,7 @@ public class StatsService {
         if (countHuman > 0) {
             ratio = (double) countMutant / countHuman;
         } else if (countMutant > 0) {
-            // Caso borde: si no hay humanos pero sí mutantes, el ratio es el total de mutantes (o infinito según criterio)
-            // Por lo general en estos exámenes basta con evitar la división por cero.
+
             ratio = 1.0;
         }
 

@@ -44,8 +44,7 @@ public class MutantController {
 
 
     @Operation(summary = "Obtener estadísticas de verificaciones")
-    @GetMapping("/stats") // Esto mapea a /mutant/stats si dejamos el RequestMapping arriba, cuidado.
-    // Corrección: Para cumplir con "/stats" literal, lo mejor es sacar el @RequestMapping de la clase o usar "/"
+    @GetMapping("/stats")
     public ResponseEntity<StatsResponseDTO> getStats() {
         return ResponseEntity.ok(statsService.getStats());
     }

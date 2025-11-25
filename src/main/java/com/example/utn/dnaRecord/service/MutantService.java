@@ -3,7 +3,6 @@ package com.example.utn.dnaRecord.service;
 import com.example.utn.dnaRecord.entity.DnaRecord;
 import com.example.utn.dnaRecord.repository.DnaRecordRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.security.MessageDigest;
@@ -40,9 +39,6 @@ public class MutantService {
 
         return isMutant;
     }
-
-    // ELIMINAR: el método isMutant() que tenías aquí
-    // Ya no es necesario, está en MutantDetector
 
     private String calculateDnaHash(String[] dna) {
         try {

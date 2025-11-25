@@ -17,7 +17,7 @@ public class DnaRecord implements Serializable {
     private Long id;
 
     @Column(unique = true)
-    private String dnaHash; // CAMBIO: Guardamos el Hash único
+    private String dnaHash;
 
     private Boolean isMutant;
 

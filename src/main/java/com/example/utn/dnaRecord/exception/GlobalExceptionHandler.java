@@ -17,7 +17,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<String> handleValidationExceptions(MethodArgumentNotValidException ex) {
-        // Esto devuelve el mensaje exacto que pusiste en tu anotación @ValidDna
+        // Esto devuelve el mensaje exacto de anotación @ValidDna
         String mensajeError = ex.getBindingResult().getAllErrors().get(0).getDefaultMessage();
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(mensajeError);
     }

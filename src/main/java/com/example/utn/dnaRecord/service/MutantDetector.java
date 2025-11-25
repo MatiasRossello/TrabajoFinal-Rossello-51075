@@ -26,8 +26,6 @@ public class MutantDetector {
                 return false;
             }
 
-            // Corrección Error 1 (InvalidCharacters): Si tiene letras raras, no es válido
-            // Verifica también que la matriz sea cuadrada (longitud de fila == n)
             if (dna[i].length() != n || !VALID_DNA_PATTERN.matcher(dna[i]).matches()) {
                 return false;
             }

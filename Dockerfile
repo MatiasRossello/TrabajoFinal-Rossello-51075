@@ -1,51 +1,24 @@
 # ========================================
 # ETAPA 1: BUILD (Compilación)
 # ========================================
-# Imagen base ligera de Alpine Linux (~5MB) para compilar el código
-# Se usa "as build" para nombrar esta etapa y referenciarla después
-FROM alpine:latest as build
+FROM maven:3.9-eclipse-temurin-21-alpine as build
 
-# Actualizar el índice de paquetes de Alpine
-RUN apk update
+WORKDIR /app
 
-# Instalar OpenJDK 17 necesario para compilar código Java/Spring Boot
-# Alpine usa 'apk' como gestor de paquetes (equivalente a apt/yum)
-RUN apk add openjdk17
+COPY pom.xml .
+COPY src ./src
 
-# Copiar TODO el código fuente del proyecto al contenedor
-# Primer '.' = origen (directorio actual del host)
-# Segundo '.' = destino (directorio de trabajo del contenedor)
-COPY . .
-
-# Dar permisos de ejecución al script gradlew (Gradle Wrapper)
-# Necesario porque los permisos pueden perderse al copiar archivos
-RUN chmod +x ./gradlew
-
-# Ejecutar Gradle para compilar y generar el JAR ejecutable
-# bootJar: tarea de Spring Boot que genera un "fat JAR" con todas las dependencias
-# --no-daemon: no usar proceso Gradle en segundo plano (mejor para Docker)
-# Resultado: build/libs/Mutantes-1.0-SNAPSHOT.jar
-RUN ./gradlew bootJar --no-daemon
+RUN mvn clean package -DskipTests
 
 # ========================================
 # ETAPA 2: RUNTIME (Ejecución)
 # ========================================
-# Imagen base con SOLO el runtime de Java (sin herramientas de compilación)
-# Esto reduce el tamaño de la imagen final de ~500MB a ~200MB
-FROM openjdk:17-alpine
+FROM eclipse-temurin:21-jre-alpine
 
-# Documentar que la aplicación escucha en el puerto 8080
-# IMPORTANTE: esto NO abre el puerto, solo es documentación
-# El puerto se mapea con: docker run -p 8080:8080
+WORKDIR /app
+
 EXPOSE 8080
 
-# Copiar el JAR generado en la ETAPA 1 (build) a la imagen final
-# --from=build: tomar archivo de la etapa "build" anterior
-# Solo se copia el JAR, NO el código fuente ni herramientas de compilación
-# Esto mantiene la imagen final pequeña y segura
-COPY --from=build ./build/libs/Mutantes-1.0-SNAPSHOT.jar ./app.jar
+COPY --from=build /app/target/*.jar app.jar
 
-# Comando que se ejecuta cuando el contenedor inicia
-# ENTRYPOINT (no CMD) asegura que siempre se ejecute la aplicación
-# ["java", "-jar", "app.jar"]: formato exec (preferido sobre shell)
 ENTRYPOINT ["java", "-jar", "app.jar"]

@@ -6,7 +6,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @RequiredArgsConstructor
-
 @Service
 public class StatsService {
 
@@ -22,7 +21,6 @@ public class StatsService {
         if (countHuman > 0) {
             ratio = (double) countMutant / countHuman;
         } else if (countMutant > 0) {
-
             ratio = 1.0;
         }
 

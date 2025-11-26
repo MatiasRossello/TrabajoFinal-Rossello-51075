@@ -6,6 +6,10 @@ import lombok.*;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
+/**
+ * Entidad que representa un registro de análisis de ADN.
+ * Almacena el hash único del ADN, si es mutante y la fecha de análisis.
+ */
 @Entity
 @Data
 @NoArgsConstructor

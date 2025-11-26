@@ -11,13 +11,11 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Optional;
 
 @RequiredArgsConstructor
-
 @Service
 public class MutantService {
 
     private final DnaRecordRepository dnaRecordRepository;
     private final MutantDetector mutantDetector;
-
 
     public boolean analyzeDna(String[] dna) {
         // 1. Calcular Hash

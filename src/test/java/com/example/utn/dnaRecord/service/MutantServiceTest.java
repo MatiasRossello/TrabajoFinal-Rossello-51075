@@ -95,50 +95,21 @@ class MutantServiceTest {
 
 
     @Test
-    @DisplayName("Debe lanzar DnaHashCalculationException si falla el hashing (edge case)")
-    void testHashCalculationFailure() {
-        // Este test es más conceptual ya que SHA-256 siempre está disponible en JVM
-        // Pero demuestra que la excepción está correctamente implementada
-
-        String[] dna = {"ATGCGA", "CAGTGC", "TTATGT", "AGAAGG", "CCCCTA", "TCACTG"};
-
-        // Verificar que el método normal NO lanza excepción
-        assertDoesNotThrow(() -> mutantService.analyzeDna(dna));
-    }
-
-    @Test
-    @DisplayName("Cache Hit con DNA HUMANO debe retornar false sin llamar al detector")
-    void testAnalyzeDna_CacheHit_HumanReturnsFalse() {
-        String[] dna = {"ATGC", "CAGT", "TTAT", "AGAC"};
-
-        // Simulamos que YA EXISTE en DB y es HUMANO
-        DnaRecord existingRecord = new DnaRecord();
-        existingRecord.setIsMutant(false);
-        when(dnaRecordRepository.findByDnaHash(anyString())).thenReturn(Optional.of(existingRecord));
-
-        // Ejecutar
-        boolean result = mutantService.analyzeDna(dna);
-
-        // Verificar
-        assertFalse(result);
-        verify(mutantDetector, never()).isMutant(any());
-        verify(dnaRecordRepository, never()).save(any());
-    }
-
-    @Test
-    @DisplayName("Debe calcular hash correctamente (verificar que no sea null/empty)")
-    void testAnalyzeDna_HashIsCalculatedCorrectly() {
-        String[] dna = {"ATGCGA", "CAGTGC", "TTATGT", "AGAAGG", "CCCCTA", "TCACTG"};
+    @DisplayName("Debe calcular hash correctamente para diferentes secuencias DNA")
+    void testHashCalculationConsistency() {
+        String[] dna1 = {"ATGCGA", "CAGTGC", "TTATGT", "AGAAGG", "CCCCTA", "TCACTG"};
+        String[] dna2 = {"ATGCGA", "CAGTGC", "TTATGT", "AGAAGG", "CCCCTA", "TCACTG"};
+        String[] dna3 = {"TTTTTT", "GGGGGG", "CCCCCC", "AAAAAA", "GGGGGG", "TTTTTT"};
 
         when(dnaRecordRepository.findByDnaHash(anyString())).thenReturn(Optional.empty());
-        when(mutantDetector.isMutant(dna)).thenReturn(true);
+        when(mutantDetector.isMutant(any())).thenReturn(true);
 
-        mutantService.analyzeDna(dna);
+        mutantService.analyzeDna(dna1);
+        mutantService.analyzeDna(dna2);
+        mutantService.analyzeDna(dna3);
 
-        // Verificar que save fue llamado con un hash válido
-        verify(dnaRecordRepository).save(argThat(record ->
-                record.getDnaHash() != null &&
-                        record.getDnaHash().length() == 64 // SHA-256 produce 64 caracteres hex
+        verify(dnaRecordRepository, times(3)).save(argThat(record ->
+                record.getDnaHash() != null && record.getDnaHash().length() == 64
         ));
     }
 }

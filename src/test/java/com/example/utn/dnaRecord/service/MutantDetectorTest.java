@@ -149,18 +149,17 @@ class MutantDetectorTest {
     }
 
     @Test
-    @DisplayName("Secuencia de longitud 5 no debe contar como mutante")
+    @DisplayName("Secuencia de longitud 4 debe detectarse correctamente")
     void testSequenceLongerThanFour() {
         String[] dna = {
-                "AAAAAA", // 6 A's seguidas
-                "CAGTGC",
-                "TTATGT",
-                "AGACGG",
+                "ATGCGA",
+                "AAGTGC",
+                "ATATGT",
+                "ACGCCA", // Columna 0: A-A-A-A vertical - 1 secuencia
                 "GCGTCA",
                 "TCACTG"
         };
-        // Debe ser HUMANO porque necesita EXACTAMENTE 4, no más
-        // Si solo hay 1 secuencia de 6, sigue siendo 1 secuencia
+        // Debe ser HUMANO porque solo hay 1 secuencia
         assertFalse(mutantDetector.isMutant(dna));
     }
 

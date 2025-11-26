@@ -16,7 +16,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RequiredArgsConstructor
-
 @RestController
 @Tag(name = "Mutant Detector", description = "API para la detección de mutantes basada en ADN")
 public class MutantController {
@@ -24,14 +23,12 @@ public class MutantController {
     private final MutantService mutantService;
     private final StatsService statsService;
 
-
     @Operation(summary = "Detectar si un humano es mutante", description = "Analiza la secuencia de ADN enviada para determinar si cumple con los criterios de mutante.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Es un Mutante", content = @Content),
             @ApiResponse(responseCode = "403", description = "Es un Humano (No Mutante)", content = @Content),
             @ApiResponse(responseCode = "400", description = "ADN inválido (formato incorrecto)", content = @Content)
     })
-
     @PostMapping("/mutant")
     public ResponseEntity<Void> checkMutant(@Valid @RequestBody DnaRequestDTO dnaRequest) {
         boolean isMutant = mutantService.analyzeDna(dnaRequest.getDna());
@@ -41,7 +38,6 @@ public class MutantController {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
     }
-
 
     @Operation(summary = "Obtener estadísticas de verificaciones")
     @GetMapping("/stats")

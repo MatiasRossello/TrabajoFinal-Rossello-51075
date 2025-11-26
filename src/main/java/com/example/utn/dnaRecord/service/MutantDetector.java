@@ -75,24 +75,12 @@ public class MutantDetector {
         return false;
     }
 
-    /**
-     * Verifica si hay una secuencia de 4 caracteres iguales
-     * @param matrix Matriz de ADN
-     * @param row Fila inicial
-     * @param col Columna inicial
-     * @param deltaRow Incremento de fila (-1, 0, 1)
-     * @param deltaCol Incremento de columna (-1, 0, 1)
-     * @return true si hay secuencia
-     */
     private boolean checkSequence(char[][] matrix, int row, int col, int deltaRow, int deltaCol) {
         final char base = matrix[row][col];
-
-        for (int i = 1; i < SEQUENCE_LENGTH; i++) {
-            if (matrix[row + i * deltaRow][col + i * deltaCol] != base) {
-                return false;
-            }
-        }
-
-        return true;
+        
+        // Comparación directa sin loop - más eficiente
+        return matrix[row + deltaRow][col + deltaCol] == base &&
+               matrix[row + 2 * deltaRow][col + 2 * deltaCol] == base &&
+               matrix[row + 3 * deltaRow][col + 3 * deltaCol] == base;
     }
 }

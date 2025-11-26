@@ -1,0 +1,10 @@
+services:
+  - type: web
+    name: mutant-detector-api
+    runtime: java
+    buildCommand: ./mvnw clean package -DskipTests
+    startCommand: java -Dserver.port=$PORT -jar target/mutantes-api-0.0.1-SNAPSHOT.jar
+    envVars:
+      - key: JAVA_VERSION
+        value: 21
+    healthCheckPath: /stats

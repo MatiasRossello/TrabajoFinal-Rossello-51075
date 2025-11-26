@@ -2,6 +2,7 @@ package com.example.utn.dnaRecord.controller;
 
 import com.example.utn.dnaRecord.dto.DnaRequestDTO;
 import com.example.utn.dnaRecord.dto.StatsResponseDTO;
+import com.example.utn.dnaRecord.exception.DnaHashCalculationException;
 import com.example.utn.dnaRecord.service.MutantService;
 import com.example.utn.dnaRecord.service.StatsService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -17,8 +18,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(MutantController.class)
 public class MutantControllerTest {
@@ -107,5 +107,22 @@ public class MutantControllerTest {
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isBadRequest()) // Esperamos 400
                 .andExpect(jsonPath("$").value("Error forzado de prueba")); // Verificamos el mensaje
+    }
+
+    @Test
+    @DisplayName("POST /mutant - Retorna 500 Internal Server Error si falla el cálculo de hash")
+    public void testCheckMutant_HashCalculationError_Returns500() throws Exception {
+        // Simulamos que el servicio lanza la excepción personalizada de hash
+        when(mutantService.analyzeDna(any()))
+                .thenThrow(new DnaHashCalculationException("Error simulado de hash", new RuntimeException()));
+
+        DnaRequestDTO request = new DnaRequestDTO();
+        request.setDna(new String[]{"ATGCGA","CAGTGC","TTATGT","AGAAGG","CCCCTA","TCACTG"});
+
+        mockMvc.perform(post("/mutant")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isInternalServerError()) // Esperamos 500
+                .andExpect(content().string(org.hamcrest.Matchers.containsString("Error interno al procesar el ADN")));
     }
 }
